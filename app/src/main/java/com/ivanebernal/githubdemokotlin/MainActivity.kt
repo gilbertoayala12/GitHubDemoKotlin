@@ -1,17 +1,18 @@
 package com.ivanebernal.githubdemokotlin
 
-import android.support.v7.app.AppCompatActivity
+import android.app.Activity
+import android.content.Context
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -43,6 +44,7 @@ class MainActivity : AppCompatActivity() {
         val gitHubClient = retrofit.create(GithubClient::class.java)
 
         searchButton.setOnClickListener {
+            hideKeyboard()
             searchProgress.visibility = View.VISIBLE
             gitHubClient.reposForUser(searchField.text.toString()).enqueue(
                     object : Callback<GitHubSearchResult> {
@@ -53,11 +55,12 @@ class MainActivity : AppCompatActivity() {
 
                         override fun onResponse(call: Call<GitHubSearchResult>?, response: Response<GitHubSearchResult>?) {
                             searchProgress.visibility = View.GONE
-                            gitHubAdapter.updateUsers(response?.body()!!.items)
+                            gitHubAdapter.updateUsers(response?.body()?.items?: listOf())
                         }
 
                     }
             )
+            //WITH RXJAVA
 //                    .subscribeOn(Schedulers.newThread())
 //                    .observeOn(AndroidSchedulers.mainThread())
 //                    .subscribe(
@@ -73,5 +76,10 @@ class MainActivity : AppCompatActivity() {
 //                    )
         }
 
+    }
+
+    private fun hideKeyboard() {
+        val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(currentFocus.windowToken, 0)
     }
 }
