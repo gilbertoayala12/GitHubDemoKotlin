@@ -1,2 +1,0 @@
-# GitHubDemoKotlin
-Demo for AndroidSchool
