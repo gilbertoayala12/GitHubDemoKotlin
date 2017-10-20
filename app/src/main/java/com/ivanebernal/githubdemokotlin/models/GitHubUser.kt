@@ -1,4 +1,4 @@
-package com.ivanebernal.githubdemokotlin
+package com.ivanebernal.githubdemokotlin.models
 
 import com.google.gson.annotations.SerializedName
 

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.ivanebernal.githubdemokotlin.models.GitHubUser
 
 /**
  * Created by welcome1 on 10/13/17.

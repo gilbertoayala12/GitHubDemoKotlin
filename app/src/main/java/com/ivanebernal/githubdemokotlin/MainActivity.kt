@@ -1,7 +1,6 @@
 package com.ivanebernal.githubdemokotlin
 
 import android.app.Activity
-import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -12,12 +11,14 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
-import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import com.ivanebernal.githubdemokotlin.dagger.AdapterModule
+import com.ivanebernal.githubdemokotlin.dagger.DaggerAppComponent
+import com.ivanebernal.githubdemokotlin.dagger.RetrofitModule
+import com.ivanebernal.githubdemokotlin.models.GitHubSearchResult
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,22 +27,19 @@ class MainActivity : AppCompatActivity() {
     val searchProgress: ProgressBar by lazy { findViewById<ProgressBar>(R.id.progress_search) }
     val usersRV: RecyclerView by lazy { findViewById<RecyclerView>(R.id.users_rv) }
 
-    val gitHubAdapter = GitHubAdapter()
+    @Inject
+    protected lateinit var gitHubClient: GithubClient
 
+    @Inject
+    protected lateinit var gitHubAdapter: GitHubAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        injectDependencies()
         searchProgress.visibility = View.GONE
         usersRV.layoutManager = LinearLayoutManager(this)
         usersRV.adapter = gitHubAdapter
-
-        val retrofit = Retrofit.Builder()
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl("http://api.github.com")
-                .build()
-        val gitHubClient = retrofit.create(GithubClient::class.java)
 
         searchButton.setOnClickListener {
             hideKeyboard()
@@ -55,27 +53,17 @@ class MainActivity : AppCompatActivity() {
 
                         override fun onResponse(call: Call<GitHubSearchResult>?, response: Response<GitHubSearchResult>?) {
                             searchProgress.visibility = View.GONE
-                            gitHubAdapter.updateUsers(response?.body()?.items?: listOf())
+                            gitHubAdapter.updateUsers(response?.body()?.items ?: listOf())
                         }
 
                     }
             )
-            //WITH RXJAVA
-//                    .subscribeOn(Schedulers.newThread())
-//                    .observeOn(AndroidSchedulers.mainThread())
-//                    .subscribe(
-//                            {
-//                                searchProgress.visibility = View.GONE
-//                                gitHubAdapter.updateUsers(it.items)
-//                            },
-//                            {
-//                                searchProgress.visibility = View.GONE
-//                                it.printStackTrace()
-//                                Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
-//                            }
-//                    )
         }
 
+    }
+
+    private fun injectDependencies() {
+        DaggerAppComponent.builder().retrofitModule(RetrofitModule()).build().inject(this)
     }
 
     private fun hideKeyboard() {
