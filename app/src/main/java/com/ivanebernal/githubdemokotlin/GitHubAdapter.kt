@@ -10,7 +10,7 @@ import com.ivanebernal.githubdemokotlin.models.GitHubUser
 /**
  * Created by welcome1 on 10/13/17.
  */
-class GitHubAdapter: RecyclerView.Adapter<GitHubAdapter.UserHolder>()  {
+class GitHubAdapter : RecyclerView.Adapter<GitHubAdapter.UserHolder>() {
 
     val users: MutableList<GitHubUser> = mutableListOf()
 
@@ -28,18 +28,18 @@ class GitHubAdapter: RecyclerView.Adapter<GitHubAdapter.UserHolder>()  {
         return UserHolder(view)
     }
 
-    fun updateUsers(users: List<GitHubUser>){
+    fun updateUsers(users: List<GitHubUser>) {
         this.users.clear()
         this.users.addAll(users)
         notifyDataSetChanged()
     }
 
 
-    inner class UserHolder(itemView : View): RecyclerView.ViewHolder(itemView){
+    inner class UserHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val nameTV: TextView by lazy { itemView.findViewById<TextView>(R.id.name) }
         val scoreTV: TextView by lazy { itemView.findViewById<TextView>(R.id.score) }
 
-        fun bindData(user: GitHubUser){
+        fun bindData(user: GitHubUser) {
             nameTV.text = user.login
             scoreTV.text = user.score.toString()
         }

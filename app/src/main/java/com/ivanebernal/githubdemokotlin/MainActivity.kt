@@ -11,7 +11,6 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
-import com.ivanebernal.githubdemokotlin.dagger.AdapterModule
 import com.ivanebernal.githubdemokotlin.dagger.DaggerAppComponent
 import com.ivanebernal.githubdemokotlin.dagger.RetrofitModule
 import com.ivanebernal.githubdemokotlin.models.GitHubSearchResult
